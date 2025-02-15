@@ -1,16 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import { Ownable2StepUpgradeable } from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
-import { INilAccessControl } from "./interfaces/INilAccessControl.sol";
+import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
+import {INilAccessControl} from "./interfaces/INilAccessControl.sol";
 
 /// @title NilAccessControl
 /// @notice See the documentation in {INilAccessControl}.
-abstract contract NilAccessControl is Ownable2StepUpgradeable, AccessControlEnumerableUpgradeable, INilAccessControl {
+abstract contract NilAccessControl is
+    Ownable2StepUpgradeable,
+    AccessControlEnumerableUpgradeable,
+    INilAccessControl
+{
     bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
     bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
-    bytes32 public constant PROPOSER_ROLE_ADMIN = keccak256("PROPOSER_ROLE_ADMIN");
+    bytes32 public constant PROPOSER_ROLE_ADMIN =
+        keccak256("PROPOSER_ROLE_ADMIN");
 
     error ErrorCallerIsNotProposer();
     error ErrorCallerIsNotAdmin();
@@ -52,7 +57,10 @@ abstract contract NilAccessControl is Ownable2StepUpgradeable, AccessControlEnum
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc INilAccessControl
-    function createNewRole(bytes32 role, bytes32 adminRole) external override onlyRole(DEFAULT_ADMIN_ROLE) {
+    function createNewRole(
+        bytes32 role,
+        bytes32 adminRole
+    ) external override onlyRole(DEFAULT_ADMIN_ROLE) {
         _setRoleAdmin(role, adminRole);
     }
 
@@ -108,7 +116,12 @@ abstract contract NilAccessControl is Ownable2StepUpgradeable, AccessControlEnum
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc INilAccessControl
-    function getAllProposers() external view override returns (address[] memory) {
+    function getAllProposers()
+        external
+        view
+        override
+        returns (address[] memory)
+    {
         return getRoleMembers(PROPOSER_ROLE);
     }
 
@@ -134,7 +147,9 @@ abstract contract NilAccessControl is Ownable2StepUpgradeable, AccessControlEnum
     }
 
     /// @inheritdoc INilAccessControl
-    function isAProposer(address proposerArg) external view override returns (bool) {
+    function isAProposer(
+        address proposerArg
+    ) external view override returns (bool) {
         return hasRole(PROPOSER_ROLE, proposerArg);
     }
 

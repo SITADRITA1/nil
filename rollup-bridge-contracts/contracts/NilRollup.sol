@@ -449,6 +449,8 @@ contract NilRollup is Ownable2StepUpgradeable, PausableUpgradeable, NilAccessCon
         // update state root index
         stateRootIndex[newStateRoot] = batchIndex;
 
+        lastFinalizedBatchIndex = batchIndex;
+
         // emit an event for the updated state root
         emit StateRootUpdated(batchIndex, oldStateRoot, newStateRoot);
     }
@@ -463,7 +465,9 @@ contract NilRollup is Ownable2StepUpgradeable, PausableUpgradeable, NilAccessCon
         // https://eips.ethereum.org/EIPS/eip-4844#point-evaluation-precompile
         if (!success) revert ErrorCallPointEvaluationPrecompileFailed();
         (, uint256 result) = abi.decode(data, (uint256, uint256));
-        if (result != BLS_MODULUS) revert ErrorUnexpectedPointEvaluationPrecompileOutput();
+        if (result != BLS_MODULUS) {
+            revert ErrorUnexpectedPointEvaluationPrecompileOutput();
+        }
     }
 
     /// @inheritdoc INilRollup
