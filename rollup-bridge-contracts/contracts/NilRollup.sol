@@ -1,22 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import {Ownable2StepUpgradeable} from '@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol';
-import {PausableUpgradeable} from '@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol';
-import {Initializable} from '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import {INilRollup} from './interfaces/INilRollup.sol';
-import {NilAccessControl} from './NilAccessControl.sol';
-import {INilVerifier} from './interfaces/INilVerifier.sol';
+import { Ownable2StepUpgradeable } from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { INilRollup } from "./interfaces/INilRollup.sol";
+import { NilAccessControl } from "./NilAccessControl.sol";
+import { INilVerifier } from "./interfaces/INilVerifier.sol";
 
 /// @title NilRollup
 /// @notice Manages rollup batches, state updates, and access control for the Nil protocol.
 /// @notice See the documentation in {INilAccessControl}.
-contract NilRollup is
-    Ownable2StepUpgradeable,
-    PausableUpgradeable,
-    NilAccessControl,
-    INilRollup
-{
+contract NilRollup is Ownable2StepUpgradeable, PausableUpgradeable, NilAccessControl, INilRollup {
     /*//////////////////////////////////////////////////////////////////////////
                              NILROLLUP-ERRORS   
     //////////////////////////////////////////////////////////////////////////*/
@@ -67,19 +62,13 @@ contract NilRollup is
     error ErrorIncorrectDataProofSize();
 
     /// @dev New state root was already finalized.
-    error ErrorNewStateRootAlreadyFinalized(
-        string batchIndex,
-        bytes32 newStateRoot
-    );
+    error ErrorNewStateRootAlreadyFinalized(string batchIndex, bytes32 newStateRoot);
 
     /// @dev Data proof array is invalid.
     error ErrorEmptyDataProofs();
 
     /// @dev Data proof array size mismatch with the blobCount
-    error ErrorDataProofsAndBlobCountMismatch(
-        uint256 dataProofCount,
-        uint256 committedBlobCount
-    );
+    error ErrorDataProofsAndBlobCountMismatch(uint256 dataProofCount, uint256 committedBlobCount);
 
     /// @dev Data proof entry is invalid.
     error ErrorInvalidDataProofItem(uint256 proofIndex);
@@ -111,7 +100,7 @@ contract NilRollup is
     bytes32 internal constant ZERO_STATE_ROOT = bytes32(0);
 
     /// @dev The initial batch index used for the genesis batch.
-    string public constant GENESIS_BATCH_INDEX = 'GENESIS_BATCH_INDEX';
+    string public constant GENESIS_BATCH_INDEX = "GENESIS_BATCH_INDEX";
 
     /// @dev Address of the kzg precompiled contract.
     address public constant POINT_EVALUATION_PRECOMPILE_ADDR = address(0x0A);
@@ -172,7 +161,10 @@ contract NilRollup is
         address _nilVerifierAddress,
         address _proposer,
         bytes32 _genesisStateRoot
-    ) public initializer {
+    )
+        public
+        initializer
+    {
         // Validate input parameters
         if (_owner == address(0)) {
             revert ErrorInvalidOwner();
@@ -253,11 +245,8 @@ contract NilRollup is
             oldStateRoot: ZERO_STATE_ROOT,
             newStateRoot: _genesisStateRoot,
             dataProofs: new bytes[](0),
-            validityProof: '',
-            publicDataInputs: PublicDataInfo({
-                placeholder1: '',
-                placeholder2: ''
-            }),
+            validityProof: "",
+            publicDataInputs: PublicDataInfo({ placeholder1: "", placeholder2: "" }),
             blobCount: 0
         });
 
@@ -272,64 +261,42 @@ contract NilRollup is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc INilRollup
-    function getLastFinalizedBatchIndex()
-        external
-        view
-        override
-        returns (string memory)
-    {
+    function getLastFinalizedBatchIndex() external view override returns (string memory) {
         return lastFinalizedBatchIndex;
     }
 
     /// @inheritdoc INilRollup
-    function getLastCommittedBatchIndex()
-        external
-        view
-        override
-        returns (string memory)
-    {
+    function getLastCommittedBatchIndex() external view override returns (string memory) {
         return lastCommittedBatchIndex;
     }
 
     /// @inheritdoc INilRollup
-    function getBlobVersionedHashes(
-        string memory batchIndex
-    ) public view override returns (bytes32[] memory) {
+    function getBlobVersionedHashes(string memory batchIndex) public view override returns (bytes32[] memory) {
         return batchInfoRecords[batchIndex].versionedHashes;
     }
 
     /// @inheritdoc INilRollup
-    function finalizedStateRoots(
-        string memory batchIndex
-    ) external view override returns (bytes32) {
+    function finalizedStateRoots(string memory batchIndex) external view override returns (bytes32) {
         return batchInfoRecords[batchIndex].newStateRoot;
     }
 
     /// @inheritdoc INilRollup
-    function isBatchFinalized(
-        string memory batchIndex
-    ) external view override returns (bool) {
+    function isBatchFinalized(string memory batchIndex) external view override returns (bool) {
         return batchInfoRecords[batchIndex].isFinalized;
     }
 
     /// @inheritdoc INilRollup
-    function isRootFinalized(
-        bytes32 stateRoot
-    ) external view override returns (bool) {
+    function isRootFinalized(bytes32 stateRoot) external view override returns (bool) {
         return bytes(stateRootIndex[stateRoot]).length != 0;
     }
 
     /// @inheritdoc INilRollup
-    function batchIndexOfRoot(
-        bytes32 stateRoot
-    ) external view override returns (string memory) {
+    function batchIndexOfRoot(bytes32 stateRoot) external view override returns (string memory) {
         return stateRootIndex[stateRoot];
     }
 
     /// @inheritdoc INilRollup
-    function isBatchCommitted(
-        string memory batchIndex
-    ) external view override returns (bool) {
+    function isBatchCommitted(string memory batchIndex) external view override returns (bool) {
         return batchInfoRecords[batchIndex].isCommitted;
     }
 
@@ -338,10 +305,7 @@ contract NilRollup is
     //////////////////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc INilRollup
-    function commitBatch(
-        string memory batchIndex,
-        uint256 blobCount
-    ) external override whenNotPaused onlyProposer {
+    function commitBatch(string memory batchIndex, uint256 blobCount) external override whenNotPaused onlyProposer {
         // check if the batch is not committed and finalized yet
 
         if (bytes(batchIndex).length == 0) {
@@ -394,7 +358,12 @@ contract NilRollup is
         bytes[] calldata dataProofs,
         bytes calldata validityProof,
         PublicDataInfo calldata publicDataInfo
-    ) external override whenNotPaused onlyProposer {
+    )
+        external
+        override
+        whenNotPaused
+        onlyProposer
+    {
         if (bytes(batchIndex).length == 0) {
             revert ErrorInvalidBatchIndex();
         }
@@ -428,10 +397,7 @@ contract NilRollup is
 
         // Check if dataProofs length matches the blobCount
         if (dataProofs.length != batchInfoRecords[batchIndex].blobCount) {
-            revert ErrorDataProofsAndBlobCountMismatch(
-                dataProofs.length,
-                batchInfoRecords[batchIndex].blobCount
-            );
+            revert ErrorDataProofsAndBlobCountMismatch(dataProofs.length, batchInfoRecords[batchIndex].blobCount);
         }
 
         // check if stateRoot is not a finalized Stateroot
@@ -440,16 +406,11 @@ contract NilRollup is
         }
 
         // Check if the oldStateRoot matches the last finalized batch's newStateRoot
-        if (
-            batchInfoRecords[lastFinalizedBatchIndex].newStateRoot !=
-            oldStateRoot
-        ) {
+        if (batchInfoRecords[lastFinalizedBatchIndex].newStateRoot != oldStateRoot) {
             revert ErrorOldStateRootMismatch();
         }
 
-        bytes32[] memory blobVersionedHashes = getBlobVersionedHashes(
-            batchIndex
-        );
+        bytes32[] memory blobVersionedHashes = getBlobVersionedHashes(batchIndex);
 
         if (blobVersionedHashes.length != dataProofs.length) {
             revert ErrorIncorrectDataProofSize();
@@ -464,11 +425,7 @@ contract NilRollup is
         }
 
         // generate publicInput for validityProof Verification
-        bytes
-            memory publicInput = generatePublicInputForValidityProofVerification(
-                batchIndex,
-                publicDataInfo
-            );
+        bytes memory publicInput = generatePublicInputForValidityProofVerification(batchIndex, publicDataInfo);
 
         if (publicInput.length == 0) {
             revert ErrorInvalidPublicInputForProof();
@@ -499,13 +456,10 @@ contract NilRollup is
     }
 
     /// @inheritdoc INilRollup
-    function verifyDataProof(
-        bytes32 blobVersionedHash,
-        bytes calldata dataProof
-    ) public view {
+    function verifyDataProof(bytes32 blobVersionedHash, bytes calldata dataProof) public view {
         // Calls the point evaluation precompile and verifies the output
-        (bool success, bytes memory data) = POINT_EVALUATION_PRECOMPILE_ADDR
-            .staticcall(abi.encodePacked(blobVersionedHash, dataProof));
+        (bool success, bytes memory data) =
+            POINT_EVALUATION_PRECOMPILE_ADDR.staticcall(abi.encodePacked(blobVersionedHash, dataProof));
         // verify that the point evaluation precompile call was successful by testing the latter 32 bytes of the
         // response is equal to BLS_MODULUS as defined in
         // https://eips.ethereum.org/EIPS/eip-4844#point-evaluation-precompile
@@ -520,8 +474,13 @@ contract NilRollup is
     function generatePublicInputForValidityProofVerification(
         string memory batchIndex,
         PublicDataInfo calldata publicDataInfo
-    ) public view virtual returns (bytes memory) {
-        return hex'0000dead';
+    )
+        public
+        view
+        virtual
+        returns (bytes memory)
+    {
+        return hex"0000dead";
     }
 
     /**
@@ -561,10 +520,7 @@ contract NilRollup is
      * @dev This function revokes the `OWNER_ROLE` from the current owner, calls acceptOwnership using
      * Ownable2StepUpgradeable's `acceptOwnership`, and grants the `OWNER_ROLE` to the new owner.
      */
-    function acceptOwnership()
-        public
-        override(Ownable2StepUpgradeable, INilRollup)
-    {
+    function acceptOwnership() public override(Ownable2StepUpgradeable, INilRollup) {
         // Revoke OWNER_ROLE from the current owner
         _revokeRole(OWNER_ROLE, owner());
 
