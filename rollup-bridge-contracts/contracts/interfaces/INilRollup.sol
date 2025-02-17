@@ -138,15 +138,15 @@ interface INilRollup is INilAccessControl {
     /**
      * @notice Pauses or unpauses the contract.
      * @dev This function allows the owner to pause or unpause the contract.
-     * @param _status The pause status to update.
+     * @param status The pause status to update.
      */
-    function setPause(bool _status) external;
+    function setPause(bool status) external;
 
     /**
      * @dev Sets the address of the NilVerifier contract.
-     * @param _nilVerifierAddress The new address of the NilVerifier contract.
+     * @param nilVerifierAddress The new address of the NilVerifier contract.
      */
-    function setVerifierAddress(address _nilVerifierAddress) external;
+    function setVerifierAddress(address nilVerifierAddress) external;
 
     function acceptOwnership() external;
 }

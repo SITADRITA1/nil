@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
-import {INilAccessControl} from "./interfaces/INilAccessControl.sol";
+import {Ownable2StepUpgradeable} from '@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol';
+import {AccessControlEnumerableUpgradeable} from '@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol';
+import {INilAccessControl} from './interfaces/INilAccessControl.sol';
 
 /// @title NilAccessControl
 /// @notice See the documentation in {INilAccessControl}.
@@ -12,10 +12,10 @@ abstract contract NilAccessControl is
     AccessControlEnumerableUpgradeable,
     INilAccessControl
 {
-    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
-    bytes32 public constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
+    bytes32 public constant OWNER_ROLE = keccak256('OWNER_ROLE');
+    bytes32 public constant PROPOSER_ROLE = keccak256('PROPOSER_ROLE');
     bytes32 public constant PROPOSER_ROLE_ADMIN =
-        keccak256("PROPOSER_ROLE_ADMIN");
+        keccak256('PROPOSER_ROLE_ADMIN');
 
     error ErrorCallerIsNotProposer();
     error ErrorCallerIsNotAdmin();
