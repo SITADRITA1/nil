@@ -6,9 +6,6 @@ Solidity smart contracts in the repository are used for proof verification and s
 1. NilRollup
 2. NilVerifier
 
-Contract Components
-![contract-components](./images/contract-components.png)
-
 ## NilRollup
 
 - NilRollup contract is the entrypoint contract for batch commits and proof verifications initiated by syncCommittee
