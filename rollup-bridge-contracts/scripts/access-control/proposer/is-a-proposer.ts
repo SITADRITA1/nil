@@ -21,14 +21,10 @@ export async function isAProposer(proposerAddress: string) {
   // Get the signer (default account)
   const [signer] = await ethers.getSigners();
 
-  console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy}`);
-
   // Create a contract instance
   const nilAccessControlInstance: Contract = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
 
   const isAProposerResponse = await nilAccessControlInstance.isAProposer(proposerAddress);
-
-  console.log(`isAProposer Response is: ${JSON.stringify(isAProposerResponse)}`);
 
   // Convert the response to a boolean
   const isProposer = Boolean(isAProposerResponse);

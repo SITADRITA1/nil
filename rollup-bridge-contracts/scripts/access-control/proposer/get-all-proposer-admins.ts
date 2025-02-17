@@ -4,7 +4,7 @@ import { getRoleMembers } from "../get-role-members";
 // npx hardhat run scripts/access-control/proposer/get-all-proposer-admins.ts --network sepolia
 export async function getAllProposerAdmins() {
     const proposerAdmins = await getRoleMembers(PROPOSER_ROLE_ADMIN);
-    console.log(`proposerAdmins are: ${JSON.stringify(proposerAdmins)}`);
+    return proposerAdmins;
 }
 
 // Main function to call the getAllProposerAdmins function

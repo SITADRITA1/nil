@@ -23,8 +23,6 @@ export async function getRoleMembers(roleHash: string) {
     // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy}`);
-
     // Create a contract instance
     const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
 

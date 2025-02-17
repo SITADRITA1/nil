@@ -25,21 +25,12 @@ export async function revokeProposerAdminAccess(proposerAdminAddress: string) {
     // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy} is revoking proposer-admin-access to ${proposerAdminAddress}`);
-
     // Create a contract instance
     const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
-
-    
 
     // Grant proposer access
     const tx = await nilRollupInstance.revokeProposerAdminRole(proposerAdminAddress);
     await tx.wait();
-
-    console.log(`Proposer-admin access revoked to ${proposerAdminAddress}`);
-
-    const proposerAdmins = await getAllProposerAdmins();
-    console.log(`latest list of proposerAdmins are: ${JSON.stringify(proposerAdmins)}`);
 }
 
 // Main function to call the revokeProposerAdminAccess function

@@ -27,11 +27,9 @@ export async function revokeAdminAccess(adminAddress: string) {
     // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy} is revoking admin-access to ${adminAddress}`);
+    let isAnAdminResponse: Boolean = await isAnAdmin(adminAddress);
 
-    let isAnAdminResponse : Boolean = await isAnAdmin(adminAddress);
-
-    if(!isAnAdminResponse) {
+    if (!isAnAdminResponse) {
         throw new Error(`account: ${adminAddress} doesnot have admin-role-access. \n cannot revoke admin access from the account which is not an existing admin.`);
     }
 
@@ -46,7 +44,7 @@ export async function revokeAdminAccess(adminAddress: string) {
 
     isAnAdminResponse = await isAnAdmin(adminAddress);
 
-    if(isAnAdminResponse) {
+    if (isAnAdminResponse) {
         throw new Error(`account: ${adminAddress} still have admin-role-access. \n revoke admin access from the account is not successful.`);
     }
 }

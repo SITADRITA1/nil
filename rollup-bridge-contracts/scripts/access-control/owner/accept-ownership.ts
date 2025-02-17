@@ -42,14 +42,10 @@ export async function acceptOwnership() {
     // Create a contract instance
     const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
 
-    console.log(`accepting pending-ownership on nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy} from: ${currentOwner} to ${pendingOwner}`);
-
     // Grant proposer access
     const tx = await nilRollupInstance.acceptOwnership();
 
     await tx.wait();
-
-    console.log(`ownership transfer accepted by newOwner as : ${pendingOwner}`);
 
     currentOwner = await getRollupOwner();
 

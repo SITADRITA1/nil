@@ -25,8 +25,6 @@ export async function grantProposerAccess(proposerAddress: string) {
     // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy} is granting proposer-access to ${proposerAddress}`);
-
     // Create a contract instance
     const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
 
@@ -35,9 +33,6 @@ export async function grantProposerAccess(proposerAddress: string) {
     await tx.wait();
 
     console.log(`Proposer access granted to ${proposerAddress}`);
-
-    const proposers = await getAllProposers();
-    console.log(`proposers are: ${JSON.stringify(proposers)}`);
 }
 
 // Main function to call the grantProposerAccess function

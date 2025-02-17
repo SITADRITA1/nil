@@ -9,27 +9,23 @@ const abiPath = path.join(__dirname, "../../../artifacts/contracts/NilRollup.sol
 const abi = JSON.parse(fs.readFileSync(abiPath, "utf8")).abi;
 
 export async function getRollupOwner() {
-      const networkName = network.name;
-      const config = loadConfig(networkName);
-  
-      // Validate configuration parameters
-      if (!isValidAddress(config.nilRollupProxy)) {
-          throw new Error("Invalid nilRollupProxy address in config");
-      }
-  
-      // Get the signer (default account)
-      const [signer] = await ethers.getSigners();
-  
-      console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy}`);
-  
-      // Create a contract instance
-      const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
-  
-      const rollupProxyOwner = await nilRollupInstance.owner();
+  const networkName = network.name;
+  const config = loadConfig(networkName);
 
-      console.log(`rollupProxy has owner: ${rollupProxyOwner}`);
-      
-      return rollupProxyOwner;
+  // Validate configuration parameters
+  if (!isValidAddress(config.nilRollupProxy)) {
+    throw new Error("Invalid nilRollupProxy address in config");
+  }
+
+  // Get the signer (default account)
+  const [signer] = await ethers.getSigners();
+
+  // Create a contract instance
+  const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
+
+  const rollupProxyOwner = await nilRollupInstance.owner();
+
+  return rollupProxyOwner;
 }
 
 // Main function to call the isAProposer function for an account

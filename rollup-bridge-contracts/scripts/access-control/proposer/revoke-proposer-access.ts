@@ -26,8 +26,6 @@ export async function revokeProposerAccess(proposerAddress: string) {
     // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    console.log(`nilRollupProxy on network: ${networkName} at address: ${config.nilRollupProxy} is revoking proposer-access to ${proposerAddress}`);
-
     // Create a contract instance
     const nilRollupInstance = new ethers.Contract(config.nilRollupProxy, abi, signer) as Contract;
 
@@ -40,11 +38,6 @@ export async function revokeProposerAccess(proposerAddress: string) {
     // Grant proposer access
     const tx = await nilRollupInstance.revokeProposerAccess(proposerAddress);
     await tx.wait();
-
-    console.log(`Proposer access revoked to ${proposerAddress}`);
-
-    const proposers = await getAllProposers();
-    console.log(`latest list of proposers are: ${JSON.stringify(proposers)}`);
 
     isAProposerResponse = await isAProposer(proposerAddress);
 
