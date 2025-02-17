@@ -86,6 +86,8 @@ interface INilRollup is INilAccessControl {
     /// @return string batch index of the stateRoot
     function batchIndexOfRoot(bytes32 stateRoot) external view returns (string memory);
 
+    function getCurrentStateRoot() external view returns (bytes32);
+
     /// @dev function to check dataProof
     /// @param blobVersionedHash The blob versioned hash to check.
     /// @param dataProof The dataProof used to verify the blob versioned hash.

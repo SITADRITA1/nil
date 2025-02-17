@@ -300,6 +300,10 @@ contract NilRollup is Ownable2StepUpgradeable, PausableUpgradeable, NilAccessCon
         return batchInfoRecords[batchIndex].isCommitted;
     }
 
+    function getCurrentStateRoot() external view override returns (bytes32) {
+        return batchInfoRecords[lastFinalizedBatchIndex].newStateRoot;
+    }
+
     /*//////////////////////////////////////////////////////////////////////////
                          USER-FACING NON-CONSTANT FUNCTIONS
     //////////////////////////////////////////////////////////////////////////*/
