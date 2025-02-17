@@ -1,6 +1,6 @@
 # Nil L1-Contracts
 
-This repository contains all the L1 contracts that are to be deployed on mainnent & sepolia testnet
+This smart-contracts module contains all the L1 contracts that are to be deployed on mainnent & sepolia testnet
 Solidity smart contracts in the repository are used for proof verification and state root updates of L2 on the L1 chain
 
 1. NilRollup

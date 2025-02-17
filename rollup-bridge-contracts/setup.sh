@@ -13,11 +13,9 @@ else
     cp .env.example .env
 fi
 
-# Install npm dependencies
 echo "Installing npm dependencies..."
 npm install
 
-# Run Hardhat clean and compile
 echo "Running Hardhat clean and compile..."
 npx hardhat clean
 npx hardhat compile
