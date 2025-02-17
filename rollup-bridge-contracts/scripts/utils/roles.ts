@@ -1,13 +1,13 @@
-import { keccak256, toUtf8Bytes } from "ethers";
+import { keccak256, toUtf8Bytes } from 'ethers';
 
 /**
  * Enum for Role Identifiers
  */
 export enum Roles {
-  OWNER_ROLE = "OWNER_ROLE",
-  PROPOSER_ROLE = "PROPOSER_ROLE",
-  PROPOSER_ROLE_ADMIN = "PROPOSER_ROLE_ADMIN",
-  DEFAULT_ADMIN_ROLE = "DEFAULT_ADMIN_ROLE",
+    OWNER_ROLE = 'OWNER_ROLE',
+    PROPOSER_ROLE = 'PROPOSER_ROLE',
+    PROPOSER_ROLE_ADMIN = 'PROPOSER_ROLE_ADMIN',
+    DEFAULT_ADMIN_ROLE = 'DEFAULT_ADMIN_ROLE',
 }
 
 /**
@@ -16,10 +16,10 @@ export enum Roles {
  * @returns keccak256 hash of the role
  */
 export function getRoleHash(role: Roles): string {
-  if (role === Roles.DEFAULT_ADMIN_ROLE) {
-    return "0x0000000000000000000000000000000000000000000000000000000000000000";
-  }
-  return keccak256(toUtf8Bytes(role));
+    if (role === Roles.DEFAULT_ADMIN_ROLE) {
+        return '0x0000000000000000000000000000000000000000000000000000000000000000';
+    }
+    return keccak256(toUtf8Bytes(role));
 }
 
 // Exporting role hashes

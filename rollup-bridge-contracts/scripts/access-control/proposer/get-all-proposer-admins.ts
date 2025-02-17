@@ -1,5 +1,5 @@
-import { PROPOSER_ROLE_ADMIN } from "../../utils/roles";
-import { getRoleMembers } from "../get-role-members";
+import { PROPOSER_ROLE_ADMIN } from '../../utils/roles';
+import { getRoleMembers } from '../get-role-members';
 
 // npx hardhat run scripts/access-control/proposer/get-all-proposer-admins.ts --network sepolia
 export async function getAllProposerAdmins() {

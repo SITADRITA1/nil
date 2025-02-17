@@ -21,7 +21,11 @@ export interface Config {
 }
 
 const configFilePath = path.join(__dirname, 'nil-deployment-config.json');
-const archiveFilePath = path.join(__dirname, 'archive', 'nil-deployment-config-archive.json');
+const archiveFilePath = path.join(
+    __dirname,
+    'archive',
+    'nil-deployment-config-archive.json',
+);
 
 // Load configuration for a specific network
 export const loadConfig = (network: string): NetworkConfig => {
@@ -30,7 +34,10 @@ export const loadConfig = (network: string): NetworkConfig => {
 };
 
 // Save configuration for a specific network
-export const saveConfig = (network: string, networkConfig: NetworkConfig): void => {
+export const saveConfig = (
+    network: string,
+    networkConfig: NetworkConfig,
+): void => {
     const config: Config = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
     config.networks[network] = networkConfig;
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf8');
@@ -39,7 +46,9 @@ export const saveConfig = (network: string, networkConfig: NetworkConfig): void 
 // Validate Ethereum address
 export const isValidAddress = (address: string): boolean => {
     try {
-        return ethers.isAddress(address) && address === ethers.getAddress(address);
+        return (
+            ethers.isAddress(address) && address === ethers.getAddress(address)
+        );
     } catch {
         return false;
     }
@@ -77,7 +86,10 @@ export const isValidBytes32 = (value: string): boolean => {
 // };
 
 // Archive old configuration
-export const archiveConfig = (network: string, networkConfig: NetworkConfig): void => {
+export const archiveConfig = (
+    network: string,
+    networkConfig: NetworkConfig,
+): void => {
     const archiveDir = path.dirname(archiveFilePath);
 
     // Ensure the directory exists
@@ -85,7 +97,11 @@ export const archiveConfig = (network: string, networkConfig: NetworkConfig): vo
         fs.mkdirSync(archiveDir, { recursive: true });
     }
 
-    let archive: { networks: { [network: string]: (NetworkConfig & { timestamp: string })[] } };
+    let archive: {
+        networks: {
+            [network: string]: (NetworkConfig & { timestamp: string })[];
+        };
+    };
     try {
         archive = JSON.parse(fs.readFileSync(archiveFilePath, 'utf8'));
     } catch (error) {
