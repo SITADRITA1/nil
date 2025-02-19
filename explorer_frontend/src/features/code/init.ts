@@ -20,7 +20,6 @@ import {
   compileCodeFx,
   fetchCodeSnippetEvent,
   fetchCodeSnippetFx,
-  loadedPlaygroundPage,
   setCodeSnippetEvent,
   setCodeSnippetFx,
   updateRecentProjects,
@@ -180,12 +179,6 @@ sample({
 sample({
   clock: fetchCodeSnippetFx.doneData,
   target: changeCode,
-});
-
-sample({
-  clock: loadedPlaygroundPage,
-  filter: $code.map((code) => !(code.trim().length === 0)),
-  target: compile,
 });
 
 $codeSnippetHash.on(fetchCodeSnippetFx.doneData, () => null);

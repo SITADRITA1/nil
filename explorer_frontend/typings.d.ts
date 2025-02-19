@@ -6,6 +6,12 @@ declare module "*.sol" {
   export default content;
 }
 
+declare module '*.md' {
+  const content: string;
+  export default content;
+}
+
+
 declare namespace Cypress {
   interface Chainable {
     compileCounterContract(): Chainable<Element>;

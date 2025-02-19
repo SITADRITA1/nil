@@ -8,6 +8,8 @@ import {
   compile,
   compileCodeFx,
   fetchCodeSnippetFx,
+  сlickOnContractsButton,
+  сlickOnLogButton,
 } from "./model";
 import "./init";
 import { type Diagnostic, linter } from "@codemirror/lint";
@@ -15,7 +17,6 @@ import type { EditorView } from "@codemirror/view";
 import { useStyletron } from "baseui";
 import { expandProperty } from "inline-style-expand-shorthand";
 import { memo, useMemo } from "react";
-import { LayoutComponent, setActiveComponent } from "../../pages/playground/model";
 import { fetchSolidityCompiler } from "../../services/compiler";
 import { getMobileStyles } from "../../styleHelpers";
 import { useMobile } from "../shared";
@@ -23,9 +24,13 @@ import { SolidityCodeField } from "../shared/components/SolidityCodeField";
 import { CodeToolbar } from "./code-toolbar/CodeToolbar";
 import { useCompileButton } from "./hooks/useCompileButton";
 
+interface CodeProps {
+  additionalProp: JSX.Element | null;
+}
+
 const MemoizedCodeToolbar = memo(CodeToolbar);
 
-export const Code = () => {
+export const Code = ({ additionalProp }: CodeProps) => {
   const [isMobile] = useMobile();
   const [code, isDownloading, errors, fetchingCodeSnippet, compiling, warnings] = useUnit([
     $code,
@@ -78,7 +83,7 @@ export const Code = () => {
             height: "100%",
             ...getMobileStyles({
               width: "calc(100vw - 32px)",
-              height: "calc(100vh - 96px)",
+              height: "auto",
             }),
           },
         },
@@ -89,7 +94,7 @@ export const Code = () => {
             position: "relative",
             height: "100%",
             marginBottom: 0,
-            paddinBottom: "16px",
+            paddingBottom: "16px",
             ...getMobileStyles({
               gap: "8px",
             }),
@@ -229,7 +234,9 @@ export const Code = () => {
               }}
               kind={BUTTON_KIND.secondary}
               size={BUTTON_SIZE.large}
-              onClick={() => setActiveComponent(LayoutComponent.Logs)}
+              onClick={() => {
+                сlickOnLogButton();
+              }}
             >
               Logs
             </Button>
@@ -243,10 +250,13 @@ export const Code = () => {
               }}
               kind={BUTTON_KIND.secondary}
               size={BUTTON_SIZE.large}
-              onClick={() => setActiveComponent(LayoutComponent.Contracts)}
+              onClick={() => {
+                сlickOnContractsButton();
+              }}
             >
               Contracts
             </Button>
+            {isMobile && additionalProp && additionalProp}
           </div>
         )}
       </div>

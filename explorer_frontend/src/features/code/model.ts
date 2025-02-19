@@ -54,6 +54,8 @@ export const fetchCodeSnippetEvent = codeDomain.createEvent<string>();
 export const setCodeSnippetFx = codeDomain.createEffect<string, string>();
 export const fetchCodeSnippetFx = codeDomain.createEffect<string, string>();
 
+export const changeIsTutorial = codeDomain.createEvent<boolean>();
+
 setCodeSnippetFx.use((code) => {
   return setCodeSnippet(code);
 });
@@ -63,6 +65,16 @@ fetchCodeSnippetFx.use((hash) => {
 });
 
 export const loadedPlaygroundPage = codeDomain.createEvent();
+
+export const loadedTutorialPage = codeDomain.createEvent();
+
+export const сlickOnLogButton = codeDomain.createEvent();
+
+export const сlickOnContractsButton = codeDomain.createEvent();
+
+export const сlickOnBackButton = codeDomain.createEvent();
+
+export const сlickOnTutorialButton = codeDomain.createEvent();
 
 export const $recentProjects = codeDomain.createStore<Record<string, string>>({});
 
