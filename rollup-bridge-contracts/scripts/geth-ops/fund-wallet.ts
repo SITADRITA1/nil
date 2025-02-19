@@ -23,10 +23,7 @@ async function createAndUseWallet() {
     ]);
 
     const transactionHash = fundingTx;
-    // Wait for the transaction to be mined
     const receipt = await provider.waitForTransaction(transactionHash);
-
-    // query balance
     const balance = await provider.getBalance(walletAddress);
 }
 

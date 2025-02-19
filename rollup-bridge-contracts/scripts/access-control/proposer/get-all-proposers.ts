@@ -6,13 +6,3 @@ export async function getAllProposers() {
     const proposers = await getRoleMembers(PROPOSER_ROLE);
     return proposers;
 }
-
-// Main function to call the getAllProposers function
-// async function main() {
-//     await getAllProposers();
-// }
-
-// main().catch((error) => {
-//     console.error(error);
-//     process.exit(1);
-// });

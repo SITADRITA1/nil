@@ -18,15 +18,12 @@ export async function getRollupPendingOwner() {
     const networkName = network.name;
     const config = loadConfig(networkName);
 
-    // Validate configuration parameters
     if (!isValidAddress(config.nilRollupProxy)) {
         throw new Error('Invalid nilRollupProxy address in config');
     }
 
-    // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    // Create a contract instance
     const nilRollupInstance = new ethers.Contract(
         config.nilRollupProxy,
         abi,

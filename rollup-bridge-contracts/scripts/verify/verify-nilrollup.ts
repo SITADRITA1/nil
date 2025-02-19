@@ -2,13 +2,12 @@ import { run } from 'hardhat';
 
 // npx hardhat run scripts/verify/verify-nilrollup.ts --network sepolia
 async function main() {
-    const contractAddress = '0x796baf7E572948CD0cbC374f345963bA433b47a2';
+    const contractAddress = '';
 
     try {
         await run('verify:verify', {
             address: contractAddress,
         });
-        console.log('Contract verified successfully');
     } catch (error) {
         console.error('Verification failed:', error);
     }

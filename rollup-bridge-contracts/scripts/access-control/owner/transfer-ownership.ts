@@ -9,7 +9,6 @@ import {
 import { getRollupOwner } from './get-owner';
 import { getRollupPendingOwner } from './get-pending-owner';
 
-// Load the ABI from the JSON file
 const abiPath = path.join(
     __dirname,
     '../../../artifacts/contracts/NilRollup.sol/NilRollup.json',
@@ -17,18 +16,14 @@ const abiPath = path.join(
 const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8')).abi;
 
 // npx hardhat run scripts/access-control/owner/transfer-ownership.ts --network sepolia
-
-// Function to transfer-ownership access
 export async function transferOwnership(newOwner: string) {
     const networkName = network.name;
     const config = loadConfig(networkName);
 
-    // Validate configuration parameters
     if (!isValidAddress(config.nilRollupProxy)) {
         throw new Error('Invalid nilRollupProxy address in config');
     }
 
-    // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
     const currentOwner = await getRollupOwner();
@@ -52,14 +47,12 @@ export async function transferOwnership(newOwner: string) {
         );
     }
 
-    // Create a contract instance
     const nilRollupInstance = new ethers.Contract(
         config.nilRollupProxy,
         abi,
         signer,
     ) as Contract;
 
-    // Grant proposer access
     const tx = await nilRollupInstance.transferOwnership(newOwner);
 
     await tx.wait();
@@ -81,7 +74,7 @@ export async function transferOwnership(newOwner: string) {
 
 // Main function to call the transferOwnership function
 async function main() {
-    const newOwner = '0x658805a93Af995ccf5C2ab3B9B06302653289E68';
+    const newOwner = '';
     await transferOwnership(newOwner);
 }
 

@@ -9,15 +9,13 @@ import {
 import { getRoleMembers } from '../get-role-members';
 import { DEFAULT_ADMIN_ROLE } from '../../utils/roles';
 
-// Load the ABI from the JSON file
 const abiPath = path.join(
     __dirname,
     '../../../artifacts/contracts/interfaces/INilAccessControl.sol/INilAccessControl.json',
 );
 const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8')).abi;
 
-// npx hardhat run scripts/access-control/admin/grant-admin-access.ts --network sepolia
-
+// execution instruction: npx hardhat run scripts/access-control/admin/grant-admin-access.ts --network sepolia
 // Function to grant Admin access
 export async function grantAdminAccess(adminAddress: string) {
     const networkName = network.name;

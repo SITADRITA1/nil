@@ -18,12 +18,10 @@ export async function getRollupOwner() {
     const networkName = network.name;
     const config = loadConfig(networkName);
 
-    // Validate configuration parameters
     if (!isValidAddress(config.nilRollupProxy)) {
         throw new Error('Invalid nilRollupProxy address in config');
     }
 
-    // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
     // Create a contract instance
@@ -38,7 +36,6 @@ export async function getRollupOwner() {
     return rollupProxyOwner;
 }
 
-// Main function to call the isAProposer function for an account
 async function main() {
     await getRollupOwner();
 }

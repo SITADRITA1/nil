@@ -7,7 +7,6 @@ export async function getAllProposerAdmins() {
     return proposerAdmins;
 }
 
-// Main function to call the getAllProposerAdmins function
 async function main() {
     await getAllProposerAdmins();
 }

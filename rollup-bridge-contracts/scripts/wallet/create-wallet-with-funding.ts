@@ -23,21 +23,15 @@ async function createAndUseWallet() {
         },
     ]);
 
-    // Step 1: Test Create a new random wallet
     const receivingWallet = Wallet.createRandom();
+    console.log('New Wallet Created:', receivingWallet.address);
 
-    // Step 2: Display wallet details
-    console.log('New Wallet Created:');
-    console.log('Address:', receivingWallet.address);
-
-    // Step 3: Use the wallet to send a transaction
     const tx = await connectedWallet.sendTransaction({
         to: receivingWallet.address,
         value: ethers.parseEther('0.1'),
         gasLimit: 21000,
     });
 
-    // Step 4: Wait for the transaction to be mined
     const receipt = await tx.wait();
 }
 

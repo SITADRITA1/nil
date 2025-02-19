@@ -4,8 +4,8 @@ import { abi as ProxyAdminABI } from '@openzeppelin/contracts/build/contracts/Pr
 // npx hardhat run scripts/transfer_proxy_admin_ownership.ts --network sepolia
 async function main() {
     // Replace with your deployed proxy address and new owner address
-    const proxyAddress = '0xd1A727Ac99ECb5Ab16797b3D585464F56fD7611a';
-    const newOwnerAddress = '0x658805a93Af995ccf5C2ab3B9B06302653289E68';
+    const proxyAddress = '';
+    const newOwnerAddress = '';
 
     // Retrieve the ProxyAdmin address
     const proxyAdminAddress =
@@ -19,10 +19,8 @@ async function main() {
         ethers.provider,
     );
 
-    // Get the signer
     const [signer] = await ethers.getSigners();
 
-    // Transfer ownership to the new owner
     const tx = await proxyAdmin
         .connect(signer)
         .transferOwnership(newOwnerAddress);

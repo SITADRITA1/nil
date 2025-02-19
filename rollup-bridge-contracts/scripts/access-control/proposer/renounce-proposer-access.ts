@@ -6,10 +6,8 @@ import {
     loadConfig,
     isValidAddress,
 } from '../../../deploy/config/config-helper';
-import { getAllProposers } from './get-all-proposers';
 import { isAProposer } from './is-a-proposer';
 
-// Load the ABI from the JSON file
 const abiPath = path.join(
     __dirname,
     '../../../artifacts/contracts/interfaces/INilAccessControl.sol/INilAccessControl.json',
@@ -17,21 +15,16 @@ const abiPath = path.join(
 const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8')).abi;
 
 // npx hardhat run scripts/access-control/proposer/renounce-proposer-access.ts --network sepolia
-
-// Function to revoke proposer access
 export async function renounceProposerAccess(proposerAddress: string) {
     const networkName = network.name;
     const config = loadConfig(networkName);
 
-    // Validate configuration parameters
     if (!isValidAddress(config.nilRollupProxy)) {
         throw new Error('Invalid nilRollupProxy address in config');
     }
 
-    // Get the signer (default account)
     const [signer] = await ethers.getSigners();
 
-    // Create a contract instance
     const nilRollupInstance = new ethers.Contract(
         config.nilRollupProxy,
         abi,
@@ -46,7 +39,6 @@ export async function renounceProposerAccess(proposerAddress: string) {
         );
     }
 
-    // Grant proposer access
     const tx = await nilRollupInstance.revokeProposerAccess(proposerAddress);
     await tx.wait();
 
@@ -61,7 +53,7 @@ export async function renounceProposerAccess(proposerAddress: string) {
 
 // Main function to call the revokeProposerAccess function
 async function main() {
-    const proposerAddress = '0x7A2f4530b5901AD1547AE892Bafe54c5201D1206';
+    const proposerAddress = '';
     await renounceProposerAccess(proposerAddress);
 }
 

@@ -18,7 +18,6 @@ const abiPath = path.join(
 const abi = JSON.parse(fs.readFileSync(abiPath, 'utf8')).abi;
 
 // npx hardhat run scripts/access-control/admin/revoke-admin-access.ts --network sepolia
-
 // Function to revoke-admin-access
 export async function revokeAdminAccess(adminAddress: string) {
     const networkName = network.name;
