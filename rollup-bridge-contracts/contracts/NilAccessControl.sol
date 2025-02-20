@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import {Ownable2StepUpgradeable} from '@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol';
+import {OwnableUpgradeable} from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import {AccessControlEnumerableUpgradeable} from '@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol';
 import {INilAccessControl} from './interfaces/INilAccessControl.sol';
 
 /// @title NilAccessControl
 /// @notice See the documentation in {INilAccessControl}.
 abstract contract NilAccessControl is
-    Ownable2StepUpgradeable,
+    OwnableUpgradeable,
     AccessControlEnumerableUpgradeable,
     INilAccessControl
 {

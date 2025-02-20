@@ -1,27 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import { stdJson } from "forge-std/Test.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import { BaseTest } from "./BaseTest.sol";
-import { NilRollup } from "../contracts/NilRollup.sol";
-import { NilAccessControl } from "../contracts/NilAccessControl.sol";
-import { INilAccessControl } from "../contracts/interfaces/INilAccessControl.sol";
-import { NilRollupMockBlob } from "./mocks/NilRollupMockBlob.sol";
-import { NilRollupMockBlobInvalidScenario } from "./mocks/NilRollupMockBlobInvalidScenario.sol";
-import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "forge-std/console.sol";
+import {stdJson} from 'forge-std/Test.sol';
+import {IAccessControl} from '@openzeppelin/contracts/access/IAccessControl.sol';
+import {PausableUpgradeable} from '@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol';
+import {BaseTest} from './BaseTest.sol';
+import {NilRollup} from '../contracts/NilRollup.sol';
+import {NilAccessControl} from '../contracts/NilAccessControl.sol';
+import {INilAccessControl} from '../contracts/interfaces/INilAccessControl.sol';
+import {NilRollupMockBlob} from './mocks/NilRollupMockBlob.sol';
+import {NilRollupMockBlobInvalidScenario} from './mocks/NilRollupMockBlobInvalidScenario.sol';
+import {ITransparentUpgradeableProxy} from '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol';
+import 'forge-std/console.sol';
 
 contract NilRollupAccessControlTest is BaseTest {
     using stdJson for string;
 
-    bytes32 internal constant OWNER_ROLE = keccak256("OWNER_ROLE");
-    bytes32 internal constant PROPOSER_ROLE_ADMIN = keccak256("PROPOSER_ROLE_ADMIN");
-    bytes32 internal constant PROPOSER_ROLE = keccak256("PROPOSER_ROLE");
+    bytes32 internal constant OWNER_ROLE = keccak256('OWNER_ROLE');
+    bytes32 internal constant PROPOSER_ROLE_ADMIN =
+        keccak256('PROPOSER_ROLE_ADMIN');
+    bytes32 internal constant PROPOSER_ROLE = keccak256('PROPOSER_ROLE');
     bytes32 internal constant DEFAULT_ADMIN_ROLE = 0x00;
 
-    string internal constant BATCH_ID = "BATCH_1";
+    string internal constant BATCH_ID = 'BATCH_1';
 
     INilAccessControl public nilAccessControlInstance;
 
@@ -31,10 +32,12 @@ contract NilRollupAccessControlTest is BaseTest {
 
     address internal _admin_2;
 
-    bytes32 internal oldStateRoot = hex"8de4b8e9649321f6aa403b03144f068e52db6cd0b6645fc572d6a9c600f5cb91";
-    bytes32 internal newStateRoot = hex"9de4b8e9649321f6aa403b03144f068e52db6cd0b6645fc572d6a9c600f5cb91";
+    bytes32 internal oldStateRoot =
+        hex'8de4b8e9649321f6aa403b03144f068e52db6cd0b6645fc572d6a9c600f5cb91';
+    bytes32 internal newStateRoot =
+        hex'9de4b8e9649321f6aa403b03144f068e52db6cd0b6645fc572d6a9c600f5cb91';
     bytes internal validityProof =
-        hex"4c746babf097541f290a0b3bd300fa5e7874cecac18404287093b343f86eec75292693c83af3e79058a8f6a555ac92492e8b24cfdcb9b74148c0fc10917430308020c2fcb81a761c74b62042e6331d4f158702e087a32c56479e97ce611770f162606d64f90eb197b8475565ee0a37128a532ea99af9fb72673e37139eed42f60d79c671097d0b566638cc8861fd7cb66ccbecb436c53877e2e74f7db03280a7";
+        hex'4c746babf097541f290a0b3bd300fa5e7874cecac18404287093b343f86eec75292693c83af3e79058a8f6a555ac92492e8b24cfdcb9b74148c0fc10917430308020c2fcb81a761c74b62042e6331d4f158702e087a32c56479e97ce611770f162606d64f90eb197b8475565ee0a37128a532ea99af9fb72673e37139eed42f60d79c671097d0b566638cc8861fd7cb66ccbecb436c53877e2e74f7db03280a7';
     bytes[] internal dataProofs;
 
     function setUp() public override {
@@ -45,12 +48,16 @@ contract NilRollupAccessControlTest is BaseTest {
         _admin_2 = vm.addr(12);
 
         // Set a valid versioned hash for the first batch
-        bytes32 versionedHash = hex"01b8c86fa666387a77359ce7a28279db2e55c1e06772828ae65f26722b704862";
-        NilRollupMockBlob(address(rollup)).setBlobVersionedHash(0, versionedHash);
+        bytes32 versionedHash = hex'01b8c86fa666387a77359ce7a28279db2e55c1e06772828ae65f26722b704862';
+        NilRollupMockBlob(address(rollup)).setBlobVersionedHash(
+            0,
+            versionedHash
+        );
 
         dataProofs = new bytes[](1);
-        dataProofs[0] =
-            hex"4c746babf097541f290a0b3bd300fa5e7874cecac18404287093b343f86eec75292693c83af3e79058a8f6a555ac92492e8b24cfdcb9b74148c0fc10917430308020c2fcb81a761c74b62042e6331d4f158702e087a32c56479e97ce611770f162606d64f90eb197b8475565ee0a37128a532ea99af9fb72673e37139eed42f60d79c671097d0b566638cc8861fd7cb66ccbecb436c53877e2e74f7db03280a7";
+        dataProofs[
+            0
+        ] = hex'4c746babf097541f290a0b3bd300fa5e7874cecac18404287093b343f86eec75292693c83af3e79058a8f6a555ac92492e8b24cfdcb9b74148c0fc10917430308020c2fcb81a761c74b62042e6331d4f158702e087a32c56479e97ce611770f162606d64f90eb197b8475565ee0a37128a532ea99af9fb72673e37139eed42f60d79c671097d0b566638cc8861fd7cb66ccbecb436c53877e2e74f7db03280a7';
     }
 
     function prepareProposerAdmin() internal {
@@ -63,7 +70,9 @@ contract NilRollupAccessControlTest is BaseTest {
         vm.stopPrank();
 
         // Verify that the new proposer admin address has the PROPOSER_ADMIN role
-        assertTrue(IAccessControl(rollup).hasRole(PROPOSER_ROLE_ADMIN, _proposerAdmin));
+        assertTrue(
+            IAccessControl(rollup).hasRole(PROPOSER_ROLE_ADMIN, _proposerAdmin)
+        );
     }
 
     function revokeProposerAdmin() internal {
@@ -76,7 +85,9 @@ contract NilRollupAccessControlTest is BaseTest {
         vm.stopPrank();
 
         // Verify that the new proposer admin address has the PROPOSER_ADMIN role
-        assertFalse(IAccessControl(rollup).hasRole(PROPOSER_ROLE_ADMIN, _proposerAdmin));
+        assertFalse(
+            IAccessControl(rollup).hasRole(PROPOSER_ROLE_ADMIN, _proposerAdmin)
+        );
     }
 
     function prepareProposer() internal {
@@ -88,7 +99,7 @@ contract NilRollupAccessControlTest is BaseTest {
 
         vm.stopPrank();
 
-        console.log("prepareProposer - ProposerRole is: ");
+        console.log('prepareProposer - ProposerRole is: ');
         console.logBytes32(PROPOSER_ROLE);
 
         // Verify that the new proposer address has the PROPOSER role
@@ -131,7 +142,14 @@ contract NilRollupAccessControlTest is BaseTest {
 
     function execute_update_state() internal {
         vm.startPrank(_proposer2);
-        rollup.updateState(BATCH_ID, oldStateRoot, newStateRoot, dataProofs, validityProof, publicDataInfoMock);
+        rollup.updateState(
+            BATCH_ID,
+            oldStateRoot,
+            newStateRoot,
+            dataProofs,
+            validityProof,
+            publicDataInfoMock
+        );
         vm.stopPrank();
     }
 
@@ -184,7 +202,9 @@ contract NilRollupAccessControlTest is BaseTest {
         vm.startPrank(_proposerAdmin);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, _proposerAdmin, PROPOSER_ROLE_ADMIN
+                IAccessControl.AccessControlUnauthorizedAccount.selector,
+                _proposerAdmin,
+                PROPOSER_ROLE_ADMIN
             )
         );
         nilAccessControlInstance.grantProposerAccess(_proposer2);
@@ -210,36 +230,16 @@ contract NilRollupAccessControlTest is BaseTest {
 
         vm.stopPrank();
 
-        assertTrue(IAccessControl(address(nilAccessControlInstance)).hasRole(DEFAULT_ADMIN_ROLE, _admin_2));
+        assertTrue(
+            IAccessControl(address(nilAccessControlInstance)).hasRole(
+                DEFAULT_ADMIN_ROLE,
+                _admin_2
+            )
+        );
 
         // query the addresses with DefaultAdmin role
         address[] memory admins = nilAccessControlInstance.getAllAdmins();
 
         assertEq(admins.length, 2);
-    }
-
-    function test_transfer_ownership() public {
-        address newOwner = vm.addr(100);
-
-        vm.startPrank(_owner);
-
-        rollup.transferOwnership(newOwner);
-
-        vm.stopPrank();
-
-        assertEq(newOwner, rollup.pendingOwner());
-        assertEq(_owner, rollup.owner());
-
-        assertTrue(rollup.hasRole(OWNER_ROLE, _owner));
-        assertFalse(rollup.hasRole(OWNER_ROLE, newOwner));
-
-        vm.startPrank(newOwner);
-
-        rollup.acceptOwnership();
-
-        vm.stopPrank();
-
-        assertFalse(rollup.hasRole(OWNER_ROLE, _owner));
-        assertTrue(rollup.hasRole(OWNER_ROLE, newOwner));
     }
 }

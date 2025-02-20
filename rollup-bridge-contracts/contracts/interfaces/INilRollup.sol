@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.27;
 
-import { INilAccessControl } from "./INilAccessControl.sol";
+import {INilAccessControl} from './INilAccessControl.sol';
 
 interface INilRollup is INilAccessControl {
     /*//////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,11 @@ interface INilRollup is INilAccessControl {
     /// @param batchIndex The index of the batch
     /// @param oldStateRoot The stateRoot of last finalized Batch which is also the prevStateRoot for current batch
     /// @param newStateRoot The stateRoot of the current BatchIndex
-    event StateRootUpdated(string indexed batchIndex, bytes32 oldStateRoot, bytes32 newStateRoot);
+    event StateRootUpdated(
+        string indexed batchIndex,
+        bytes32 oldStateRoot,
+        bytes32 newStateRoot
+    );
 
     /*//////////////////////////////////////////////////////////////////////////
                                        STRUCTS
@@ -64,19 +68,27 @@ interface INilRollup is INilAccessControl {
 
     /// @param batchIndex The index of the batch.
     /// @return The state root of a finalized batch.
-    function finalizedStateRoots(string memory batchIndex) external view returns (bytes32);
+    function finalizedStateRoots(
+        string memory batchIndex
+    ) external view returns (bytes32);
 
     /// @param batchIndex The index of the batch.
     /// @return The versioned hashes of the blobs in the batch.
-    function getBlobVersionedHashes(string memory batchIndex) external view returns (bytes32[] memory);
+    function getBlobVersionedHashes(
+        string memory batchIndex
+    ) external view returns (bytes32[] memory);
 
     /// @param batchIndex The index of the batch.
     /// @return Whether the batch is committed by batch index.
-    function isBatchCommitted(string memory batchIndex) external view returns (bool);
+    function isBatchCommitted(
+        string memory batchIndex
+    ) external view returns (bool);
 
     /// @param batchIndex The index of the batch.
     /// @return Whether the batch is finalized by batch index.
-    function isBatchFinalized(string memory batchIndex) external view returns (bool);
+    function isBatchFinalized(
+        string memory batchIndex
+    ) external view returns (bool);
 
     /// @param stateRoot The state root of a finalized batch.
     /// @return Whether a stateRoot is finalized
@@ -84,14 +96,19 @@ interface INilRollup is INilAccessControl {
 
     /// @param stateRoot The state root of a finalized batch.
     /// @return string batch index of the stateRoot
-    function batchIndexOfRoot(bytes32 stateRoot) external view returns (string memory);
+    function batchIndexOfRoot(
+        bytes32 stateRoot
+    ) external view returns (string memory);
 
     function getCurrentStateRoot() external view returns (bytes32);
 
     /// @dev function to check dataProof
     /// @param blobVersionedHash The blob versioned hash to check.
     /// @param dataProof The dataProof used to verify the blob versioned hash.
-    function verifyDataProof(bytes32 blobVersionedHash, bytes calldata dataProof) external view;
+    function verifyDataProof(
+        bytes32 blobVersionedHash,
+        bytes calldata dataProof
+    ) external view;
 
     /// @dev generatePublicInputForValidityProofVerification
     /// @param batchIndex The index of the batch.
@@ -100,10 +117,7 @@ interface INilRollup is INilAccessControl {
     function generatePublicInputForValidityProofVerification(
         string memory batchIndex,
         PublicDataInfo calldata publicDataInfo
-    )
-        external
-        view
-        returns (bytes memory);
+    ) external view returns (bytes memory);
 
     /*//////////////////////////////////////////////////////////////////////////
                                        NON-CONSTANT FUNCTIONS
@@ -134,8 +148,7 @@ interface INilRollup is INilAccessControl {
         bytes[] calldata dataProofs,
         bytes calldata validityProof,
         PublicDataInfo calldata publicDataInputs
-    )
-        external;
+    ) external;
 
     /**
      * @notice Pauses or unpauses the contract.
@@ -149,6 +162,4 @@ interface INilRollup is INilAccessControl {
      * @param nilVerifierAddress The new address of the NilVerifier contract.
      */
     function setVerifierAddress(address nilVerifierAddress) external;
-
-    function acceptOwnership() external;
 }
