@@ -35,7 +35,6 @@ const upgradeNilRollup: DeployFunction = async function (
     console.log('Checking current implementation address...');
     const currentImplementationAddress =
         await upgrades.erc1967.getImplementationAddress(nilRollupProxyAddress);
-    //await upgrades.forceImport(nilRollupProxyAddress, await ethers.getContractFactory("NilRollup"));
 
     // Deploy the new implementation contract and upgrade the proxy
     const NilRollupV2 = await ethers.getContractFactory('NilRollup');
@@ -48,9 +47,12 @@ const upgradeNilRollup: DeployFunction = async function (
         await upgrades.erc1967.getImplementationAddress(nilRollupProxyAddress);
 
     // Verify that the implementation address has changed
-    // if (currentImplementationAddress === newImplementationAddress) {
-    //   throw new Error("Upgrade failed: Implementation address did not change");
-    // }
+    if (currentImplementationAddress === newImplementationAddress) {
+        throw new Error(
+            'Upgrade failed: Implementation address did not change',
+        );
+    }
+
     // Additional checks to verify contract state
     const nilRollup = await ethers.getContractAt(
         'NilRollup',

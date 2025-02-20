@@ -60,32 +60,6 @@ export const isValidBytes32 = (value: string): boolean => {
 };
 
 // Archive old configuration
-// export const archiveConfig = (network: string, networkConfig: NetworkConfig): void => {
-//     const archiveDir = path.dirname(archiveFilePath);
-
-//     // Ensure the directory exists
-//     if (!fs.existsSync(archiveDir)) {
-//         fs.mkdirSync(archiveDir, { recursive: true });
-//     }
-
-//     let archive: { networks: { [network: string]: NetworkConfig[] } };
-//     try {
-//         archive = JSON.parse(fs.readFileSync(archiveFilePath, 'utf8'));
-//     } catch (error) {
-//         archive = { networks: {} };
-//     }
-
-//     if (!archive.networks[network]) {
-//         archive.networks[network] = [];
-//     }
-
-//     const timestamp = new Date().toISOString();
-//     archive.networks[network].push({ ...networkConfig, timestamp } as NetworkConfig);
-
-//     fs.writeFileSync(archiveFilePath, JSON.stringify(archive, null, 2), 'utf8');
-// };
-
-// Archive old configuration
 export const archiveConfig = (
     network: string,
     networkConfig: NetworkConfig,
