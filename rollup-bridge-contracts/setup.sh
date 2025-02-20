@@ -48,18 +48,6 @@ if command_exists forge; then
         echo "dapphub/ds-test already installed. Skipping."
     fi
 
-    # Remove .gitmodules file if it exists
-    if [ -f .gitmodules ]; then
-        echo "Removing .gitmodules file..."
-        rm .gitmodules
-    fi
-
-    # Remove .gitmodules file if it exists
-    if [ -f ../.gitmodules ]; then
-        echo "Removing .gitmodules file..."
-        rm ../.gitmodules
-    fi
-
     echo "Running Forge clean and compile..."
     forge clean
     forge build
