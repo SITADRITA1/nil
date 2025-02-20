@@ -119,7 +119,7 @@ config:
   gasPrice:
     shards: ["1", "2", "3"]
 `
-	configAccessor, err := config.NewConfigAccessorTx(tx, nil)
+	configAccessor, err := config.NewConfigAccessorTx(tx, common.EmptyHash)
 	require.NoError(t, err)
 	state, err = NewExecutionState(tx, 0, StateParams{ConfigAccessor: configAccessor})
 	require.NoError(t, err)

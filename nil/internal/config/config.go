@@ -115,12 +115,12 @@ func NewConfigAccessorByNumberTx(ctx context.Context, tx db.RoTx, mainShardBlock
 	if err != nil {
 		return nil, err
 	}
-	return NewConfigAccessorTx(tx, &mainShardHash)
+	return NewConfigAccessorTx(tx, mainShardHash)
 }
 
 // NewConfigAccessorTx creates a new configAccessorImpl reading the whole trie from the MPT.
-func NewConfigAccessorTx(tx db.RoTx, mainShardHash *common.Hash) (ConfigAccessor, error) {
-	trie, err := GetConfigTrie(tx, mainShardHash)
+func NewConfigAccessorTx(tx db.RoTx, mainShardHash common.Hash) (ConfigAccessor, error) {
+	trie, err := GetConfigTrie(tx, &mainShardHash)
 	if err != nil {
 		return nil, err
 	}

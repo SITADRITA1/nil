@@ -220,7 +220,7 @@ func newState(t *testing.T) *ExecutionState {
 	tx, err := database.CreateRwTx(ctx)
 	require.NoError(t, err)
 
-	cfgAccessor, err := config.NewConfigAccessorTx(tx, nil)
+	cfgAccessor, err := config.NewConfigAccessorTx(tx, common.EmptyHash)
 	require.NoError(t, err)
 
 	require.NoError(t, config.SetParamGasPrice(cfgAccessor, &config.ParamGasPrice{

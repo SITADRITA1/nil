@@ -409,6 +409,36 @@ func validateRepliedBlock(
 	return nil
 }
 
+func (s *Syncer) waitMainShardBlock(ctx context.Context, hash common.Hash) error {
+	// No need to wait for main shard block if we are in the main shard
+	if s.config.ShardId.IsMainShard() {
+		return nil
+	}
+
+	// FIXME: dirty hack with polling. Eventually it should be replaced with proper pub-sub mechanism.
+	for {
+		tx, err := s.db.CreateRoTx(ctx)
+		if err != nil {
+			return err
+		}
+
+		_, err = db.ReadBlock(tx, types.MainShardId, hash)
+		tx.Rollback()
+		if !errors.Is(err, db.ErrKeyNotFound) {
+			return err
+		}
+		if err == nil {
+			return nil
+		}
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(100 * time.Millisecond):
+		}
+	}
+}
+
 func (s *Syncer) replayBlock(ctx context.Context, block *types.BlockWithExtractedData) error {
 	roTx, err := s.db.CreateRoTx(ctx)
 	if err != nil {
@@ -419,6 +449,10 @@ func (s *Syncer) replayBlock(ctx context.Context, block *types.BlockWithExtracte
 	prevBlock, err := db.ReadBlock(roTx, s.config.ShardId, block.Block.PrevBlock)
 	if err != nil {
 		return fmt.Errorf("failed to read previous block: %w", err)
+	}
+
+	if err := s.waitMainShardBlock(ctx, block.Block.MainChainHash); err != nil {
+		return err
 	}
 
 	gen, err := execution.NewBlockGenerator(ctx, s.config.BlockGeneratorParams, s.db, prevBlock)
