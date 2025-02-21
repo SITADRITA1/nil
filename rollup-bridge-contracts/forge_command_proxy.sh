@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Set the root directory of the workspace
-WORKSPACE_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
+WORKSPACE_ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 
-# Create a temporary remappings file with absolute paths
-TEMP_REMAPPINGS=$(mktemp)
-sed "s|node_modules|$WORKSPACE_ROOT/nil/node_modules|g" remappings.txt > "$TEMP_REMAPPINGS"
+# Print the WORKSPACE_ROOT for debugging
+echo "WORKSPACE_ROOT: $WORKSPACE_ROOT"
 
-# Read the remappings from the temporary file and format them as individual arguments
-REMAPPINGS=$(awk '{print "--remappings", $0}' "$TEMP_REMAPPINGS" | tr '\n' ' ')
+# Extract remappings from foundry.toml
+REMAPPINGS=$(grep 'remappings' foundry.toml | sed 's/remappings = \[//; s/\]//; s/,//g; s/"//g' | tr '\n' ' ')
+
+# Adjust remappings to use absolute paths
+REMAPPINGS=$(echo $REMAPPINGS | sed "s|node_modules|$WORKSPACE_ROOT/nil/node_modules|g")
+
+# Format remappings as individual arguments
+REMAPPINGS=$(echo $REMAPPINGS | awk '{for(i=1;i<=NF;i++) print "--remappings", $i}' | tr '\n' ' ')
 
 # Run forge with the remappings as arguments
 eval forge "$@" $REMAPPINGS
-
-# Clean up the temporary remappings file
-rm "$TEMP_REMAPPINGS"
