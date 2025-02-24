@@ -384,6 +384,18 @@
         "l2ChainId": 0,
         "genesisStateRoot": "0x64756d6d795374617465526f6f74000000000000000000000000000000000000",
         "timestamp": "2025-02-20T21:31:19.748Z"
+      },
+      {
+        "nilRollupImplementation": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+        "nilRollupProxy": "0x851356ae760d987E095750cCeb3bC6014560891C",
+        "nilVerifier": "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
+        "proxyAdminAddress": "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3",
+        "nilRollupOwnerAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "defaultAdminAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "proposerAddress": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "l2ChainId": 0,
+        "genesisStateRoot": "0x64756d6d795374617465526f6f74000000000000000000000000000000000000",
+        "timestamp": "2025-02-24T13:20:23.964Z"
       }
     ],
     "sepolia": [
