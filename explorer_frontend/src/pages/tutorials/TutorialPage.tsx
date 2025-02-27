@@ -30,7 +30,7 @@ export const TutorialPage = () => {
   const [tutorialChecks] = useUnit([$tutorialChecksState]);
 
   useEffect(() => {
-    loadedTutorialPage();
+    loadedTutorialPage(true);
 
     return () => {
       closeApp();

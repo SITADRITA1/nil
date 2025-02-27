@@ -25,12 +25,13 @@ import { useMobile } from "../shared";
 import { SolidityCodeField } from "../shared/components/SolidityCodeField";
 import { CodeToolbar } from "./code-toolbar/CodeToolbar";
 import { useCompileButton } from "./hooks/useCompileButton";
+import { $tutorialChecksState } from "../../pages/tutorials/model";
 
 const MemoizedCodeToolbar = memo(CodeToolbar);
 
 export const Code = () => {
   const [isMobile] = useMobile();
-  const [code, isDownloading, errors, fetchingCodeSnippet, compiling, warnings, isTutorial] =
+  const [code, isDownloading, errors, fetchingCodeSnippet, compiling, warnings, isTutorial, tutorialChecks] =
     useUnit([
       $code,
       fetchSolidityCompiler.pending,
@@ -39,6 +40,7 @@ export const Code = () => {
       compileCodeFx.pending,
       $warnings,
       isTutorialPage,
+      $tutorialChecksState
     ]);
   const [css] = useStyletron();
 
@@ -70,8 +72,6 @@ export const Code = () => {
 
   const noCode = code.trim().length === 0;
   const btnContent = useCompileButton();
-  console.log(isTutorial);
-
   return (
     <Card
       overrides={{
@@ -150,6 +150,29 @@ export const Code = () => {
               {btnContent}
             </Button>
           )}
+          {!isMobile && (
+            <Button
+              kind={BUTTON_KIND.secondary}
+              isLoading={isDownloading || compiling}
+              size={BUTTON_SIZE.default}
+              onClick={() => compile()}
+              disabled={!tutorialChecks}
+              overrides={{
+                Root: {
+                  style: {
+                    whiteSpace: "nowrap",
+                    lineHeight: 1,
+                    marginLeft: "auto",
+                    backgroundColor: COLORS.green200,
+                    color: COLORS.black,
+                  },
+                },
+              }}
+              data-testid="run-checks-button"
+            >
+              Run Checks
+            </Button>
+          )}
         </div>
         {fetchingCodeSnippet ? (
           <div
@@ -226,6 +249,26 @@ export const Code = () => {
               {btnContent}
             </Button>
             <Button
+              kind={BUTTON_KIND.secondary}
+              isLoading={isDownloading || compiling}
+              size={BUTTON_SIZE.default}
+              onClick={() => compile()}
+              disabled={!tutorialChecks}
+              overrides={{
+                Root: {
+                  style: {
+                    lineHeight: 1,
+                    backgroundColor: COLORS.green200,
+                    color: COLORS.black,
+                    gridColumn: "1 / 3"
+                  },
+                },
+              }}
+              data-testid="run-checks-button"
+            >
+              Run Checks
+            </Button>
+            <Button
               overrides={{
                 Root: {
                   style: {
@@ -251,6 +294,7 @@ export const Code = () => {
               }}
               kind={BUTTON_KIND.secondary}
               size={BUTTON_SIZE.large}
+              disabled={isTutorial && !tutorialChecks}
               onClick={() => {
                 сlickOnContractsButton();
               }}

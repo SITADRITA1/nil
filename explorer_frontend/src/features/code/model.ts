@@ -81,3 +81,5 @@ export const сlickOnTutorialButton = codeDomain.createEvent();
 export const $recentProjects = codeDomain.createStore<Record<string, string>>({});
 
 export const updateRecentProjects = codeDomain.createEvent();
+
+export const triggerTutorialCheck = codeDomain.createEvent();

@@ -5,12 +5,15 @@ import { CompilerVersionButton } from "./CompilerVersionButton.tsx";
 import { HyperlinkButton } from "./HyperlinkButton";
 import { OpenProjectButton } from "./OpenProjectButton.tsx";
 import { QuestionButton } from "./QuestionButton";
+import { isTutorialPage } from "../model.ts";
+import { useUnit } from "effector-react";
 
 type CodeToolbarProps = {
   disabled: boolean;
 };
 
 export const CodeToolbar: FC<CodeToolbarProps> = ({ disabled }) => {
+  const isTutorial = useUnit(isTutorialPage);
   const [css] = useStyletron();
   const [isMobile] = useMobile();
 
@@ -38,7 +41,7 @@ export const CodeToolbar: FC<CodeToolbarProps> = ({ disabled }) => {
       <QuestionButton />
       <HyperlinkButton disabled={disabled} />
       <OpenProjectButton disabled={disabled} />
-      <CompilerVersionButton disabled={disabled} />
+      {!isTutorial && (<CompilerVersionButton disabled={disabled}/>)}
     </div>
   );
 };
