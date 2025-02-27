@@ -7,9 +7,3 @@ export type App = {
   abi: Abi;
 };
 
-export type Tutorial = {
-  id: string;
-  text: string;
-  contracts: string;
-  stage: number;
-};

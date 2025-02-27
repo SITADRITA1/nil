@@ -1,11 +1,11 @@
 async function loadTutorials() {
-  const testTutorial = await import("./assets/testTutorial.md?raw");
-  const testContracts = await import("./assets/testContracts.sol?raw");
+  const textOne = await import("./assets/tutorialOneText.md?raw");
+  const contractsOne = await import("./assets/tutorialOneContracts.sol?raw");
   const tutorials = [
     {
       stage: 1,
-      text: testTutorial.default,
-      contracts: testContracts.default,
+      text: textOne.default,
+      contracts: contractsOne.default,
     },
   ];
   return tutorials;
