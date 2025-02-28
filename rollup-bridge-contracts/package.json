@@ -11,19 +11,14 @@
     "node": ">=14"
   },
   "scripts": {
-    "build": "forge build",
-    "compile": "npx hardhat compile && forge compile",
-    "clean": "rm -rf artifacts && rm -rf .openzeppelin && rm -rf deployments && rm -rf cache && npx hardhat clean && forge clean",
-    "deploy-nilrollup-proxy": "npx hardhat deploy --network sepolia --tags NilRollup",
+    "clean": "npx hardhat clean",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat deploy --network geth --tags NilContracts",
     "format:solidity": "prettier --write 'contracts/**/*.sol'",
     "format:typescript": "prettier --write 'scripts/**/*.ts' 'deploy/**/*.ts'",
     "lint": "npm run lint:sol && npm run prettier:check",
-    "lint:fix": "npm run lint:sol:fix && forge fmt",
-    "lint:sol": "forge fmt --check && npm solhint \"{benchmark,script,src,tests}/**/*.sol\"",
+    "lint:fix": "npm run lint:sol:fix",
     "lint:sol:fix": "npm run solhint \"{benchmark,script,src,contracts,tests}/**/*.sol\" --fix --noPrompt",
-    "test": "forge test",
-    "test:lite": "FOUNDRY_PROFILE=lite forge test",
-    "test:optimized": "npm run build:optimized && FOUNDRY_PROFILE=test-optimized forge test",
     "solhint": "solhint"
   },
   "main": "artifacts/index.cjs.js",
