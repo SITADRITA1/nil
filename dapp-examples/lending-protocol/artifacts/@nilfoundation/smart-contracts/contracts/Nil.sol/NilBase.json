@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "NilBase",
+  "sourceName": "@nilfoundation/smart-contracts/contracts/Nil.sol",
+  "abi": [],
+  "bytecode": "0x60808060405234601357603a908160198239f35b600080fdfe600080fdfea2646970667358221220cbc6df52b929406749268c89b0ca8b4449f893ce018805f6526913327ffcec0564736f6c634300081c0033",
+  "deployedBytecode": "0x600080fdfea2646970667358221220cbc6df52b929406749268c89b0ca8b4449f893ce018805f6526913327ffcec0564736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
