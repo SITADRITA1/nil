@@ -2,6 +2,7 @@ package concurrent
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -83,4 +84,25 @@ func RunTickerLoop(ctx context.Context, interval time.Duration, onTick func(cont
 			return
 		}
 	}
+}
+
+func RunWithRetries[T any](ctx context.Context, interval time.Duration, retries int, f func() (T, error)) (T, error) {
+	timer := time.NewTimer(interval)
+	defer timer.Stop()
+
+	var res T
+	var err error
+	for range retries {
+		select {
+		case <-ctx.Done():
+			return res, nil
+		case <-timer.C:
+			res, err = f()
+			if err == nil {
+				return res, nil
+			}
+		}
+	}
+
+	return res, fmt.Errorf("failed to run function after %d retries, last error: %w", retries, err)
 }

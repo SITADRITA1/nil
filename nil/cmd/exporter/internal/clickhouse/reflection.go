@@ -119,6 +119,9 @@ func reflectSchemeToClickhouse(f any) (reflectedScheme, error) {
 		if clickhouseName != "" {
 			fieldNameInDb = strings.Split(clickhouseName, ",")[0]
 		}
+		if fieldNameInDb == "-" {
+			continue
+		}
 		if field.Type.Kind() == reflect.Struct {
 			if field.Type.Name() == "Value" {
 				fieldTypes[fieldNameInDb] = "UInt256"

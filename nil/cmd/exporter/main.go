@@ -108,7 +108,6 @@ You could config it via config file or flags or environment variables.`,
 		Client:         rpc.NewClient(apiEndpoint, logger),
 		ExporterDriver: clickhouseExporter,
 		AllowDbDrop:    allowDbDrop,
-		BlocksChan:     make(chan *internal.BlockWithShardId, 1000),
 	}))
 
 	logger.Info().Msg("Exporter stopped")

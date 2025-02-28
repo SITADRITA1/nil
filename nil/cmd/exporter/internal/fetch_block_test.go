@@ -16,27 +16,27 @@ import (
 type SuiteFetchBlock struct {
 	suite.Suite
 
-	server  tests.RpcSuite
-	nShards uint32
-	cfg     Cfg
-	context context.Context
-	cancel  context.CancelFunc
+	server   tests.RpcSuite
+	nShards  uint32
+	exporter *exporter
+	context  context.Context
+	cancel   context.CancelFunc
 }
 
 func (s *SuiteFetchBlock) TestFetchBlock() {
-	fetchedBlock, err := s.cfg.FetchBlock(s.context, types.MainShardId, "latest")
+	fetchedBlock, err := s.exporter.FetchBlock(s.context, types.MainShardId, "latest")
 	s.Require().NoError(err, "Failed to fetch last block")
 
 	s.Require().NotNil(fetchedBlock, "Fetched block is nil")
 
-	blocks, err := s.cfg.FetchBlocks(s.context, types.MainShardId, fetchedBlock.Block.Id, fetchedBlock.Block.Id+1)
+	blocks, err := s.exporter.FetchBlocks(s.context, types.MainShardId, fetchedBlock.Block.Id, fetchedBlock.Block.Id+1)
 	s.Require().NoError(err, "Failed to fetch block by hash")
 	s.Require().Len(blocks, 1, "Fetched one block")
 	s.Require().Equal(fetchedBlock, blocks[0])
 }
 
 func (s *SuiteFetchBlock) TestFetchShardIdList() {
-	shardIds, err := s.cfg.FetchShards(s.context)
+	shardIds, err := s.exporter.FetchShards(s.context)
 	s.Require().NoError(err, "Failed to fetch shard ids")
 	s.Require().Len(shardIds, int(s.nShards-1), "Shard ids length is not equal to expected")
 }
@@ -53,8 +53,8 @@ func (s *SuiteFetchBlock) SetupSuite() {
 
 	url := rpctest.GetSockPath(s.T())
 	logger := logging.NewLogger("test_exporter")
-	s.cfg = Cfg{
-		Client: rpc.NewClient(url, logger),
+	s.exporter = &exporter{
+		client: rpc.NewClient(url, logger),
 	}
 
 	cfg := &nilservice.Config{

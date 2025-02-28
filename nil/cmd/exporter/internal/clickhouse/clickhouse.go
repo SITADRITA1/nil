@@ -1,7 +1,9 @@
 package clickhouse
 
 import (
+	"bytes"
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -9,6 +11,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/NilFoundation/nil/nil/cmd/exporter/internal"
 	"github.com/NilFoundation/nil/nil/common"
+	"github.com/NilFoundation/nil/nil/common/check"
 	"github.com/NilFoundation/nil/nil/common/sszx"
 	"github.com/NilFoundation/nil/nil/internal/types"
 )
@@ -155,67 +158,75 @@ func (d *ClickhouseDriver) Reconnect() error {
 	return err
 }
 
-func (d *ClickhouseDriver) SetupScheme(ctx context.Context) error {
+func (d *ClickhouseDriver) SetupScheme(ctx context.Context, params internal.SetupParams) error {
+	version, err := readVersion(ctx, d.conn)
+	if err != nil {
+		return fmt.Errorf("failed to read version: %w", err)
+	}
+	if bytes.Equal(version[:], params.Version[:]) {
+		return nil
+	}
+
+	if !params.AllowDbDrop {
+		return fmt.Errorf("version mismatch: blockchain %x, exporter %x", params.Version, version)
+	}
+
+	if version.Empty() {
+		logger.Info().Msg("Database is empty. Recreating...")
+	} else {
+		logger.Info().Msgf("Version mismatch: blockchain %x, exporter %x. Dropping database...", params.Version, version)
+	}
+
+	if err := d.conn.Exec(ctx, "DROP DATABASE IF EXISTS "+d.options.Auth.Database); err != nil {
+		return fmt.Errorf("failed to drop database: %w", err)
+	}
+
+	if err := d.conn.Exec(ctx, "CREATE DATABASE "+d.options.Auth.Database); err != nil {
+		return fmt.Errorf("failed to create database: %w", err)
+	}
+
 	return setupSchemes(ctx, d.conn)
 }
 
-func rowToBlock(rows driver.Rows) (*types.Block, error) {
-	var binary []uint8
-	if err := rows.Scan(&binary); err != nil {
-		return nil, err
-	}
-	var block types.Block
-	if err := block.UnmarshalSSZ(binary); err != nil {
-		return nil, err
-	}
-	return &block, nil
-}
-
-func (d *ClickhouseDriver) FetchLatestProcessedBlock(ctx context.Context, shardId types.ShardId) (*types.Block, bool, error) {
-	rows, err := d.conn.Query(ctx, `SELECT blocks.binary
-from blocks
-where shard_id = $1
-order by blocks.id desc
-limit 1`, shardId)
-	if err != nil {
-		return nil, false, err
-	}
-	defer func(rows driver.Rows) {
-		_ = rows.Close()
-	}(rows)
-	if !rows.Next() {
-		return nil, false, nil
-	}
-	block, err := rowToBlock(rows)
-	if err != nil {
-		return nil, false, err
-	}
-	return block, true, nil
-}
-
-func (d *ClickhouseDriver) FetchEarliestAbsentBlock(ctx context.Context, shardId types.ShardId) (types.BlockNumber, bool, error) {
-	// join in clickhouse return default value on outer join
-	rows, err := d.conn.Query(ctx, `SELECT a.id + 1
-from blocks as a
-		 left outer join blocks as b on a.id + 1 = b.id and a.shard_id = b.shard_id
-where a.shard_id = $1 and a.id > b.id
-order by a.id asc
-`, shardId)
-	if err != nil {
-		return 0, false, err
-	}
-	defer func(rows driver.Rows) {
-		_ = rows.Close()
-	}(rows)
-	if !rows.Next() {
-		return 0, false, nil
-	}
+// blockIdFromRow returns block id from the first column of the row.
+// If the row is empty, returns -1, so you can use the (result + 1) as the next block id.
+func (d *ClickhouseDriver) blockIdFromRow(row driver.Row) (types.BlockNumber, error) {
 	var blockNumber uint64
-	if err = rows.Scan(&blockNumber); err != nil {
-		return 0, false, err
+	if err := row.Scan(&blockNumber); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return types.InvalidBlockNumber, nil
+		}
+		return 0, err
 	}
+	return types.BlockNumber(blockNumber), nil
+}
 
-	return types.BlockNumber(blockNumber), true, nil
+func (d *ClickhouseDriver) FetchLatestProcessedBlockId(ctx context.Context, shardId types.ShardId) (types.BlockNumber, error) {
+	return d.blockIdFromRow(d.conn.QueryRow(ctx, `
+		SELECT id
+		FROM blocks
+		WHERE shard_id = $1
+		ORDER BY id DESC
+		LIMIT 1
+	`, shardId))
+}
+
+func (d *ClickhouseDriver) FetchEarliestAbsentBlockId(ctx context.Context, shardId types.ShardId) (types.BlockNumber, error) {
+	// We look for `a.id` such that there is no `a.id+1` in the table.
+	// Left (outer) join will set `b.id` to 0 in that case.
+	id, err := d.blockIdFromRow(d.conn.QueryRow(ctx, `
+		SELECT a.id
+		FROM blocks AS a
+			LEFT JOIN blocks AS b
+				ON a.id + 1 = b.id AND a.shard_id = b.shard_id
+		WHERE a.shard_id = $1 AND b.id == 0
+		ORDER BY a.id ASC
+		LIMIT 1
+	`, shardId))
+	if err != nil {
+		return 0, err
+	}
+	return id + 1, nil
 }
 
 type blockWithSSZ struct {
@@ -357,37 +368,26 @@ func exportTransactionsAndLogs(ctx context.Context, conn driver.Conn, blocks []b
 	return nil
 }
 
-func (d *ClickhouseDriver) FetchBlock(ctx context.Context, id types.ShardId, number types.BlockNumber) (*types.Block, bool, error) {
-	rows, err := d.conn.Query(ctx, "SELECT binary FROM blocks WHERE shard_id = $1 AND id = $2", id, number)
-	if err != nil {
-		return nil, false, err
+func (d *ClickhouseDriver) HaveBlock(ctx context.Context, id types.ShardId, number types.BlockNumber) (bool, error) {
+	row := d.conn.QueryRow(ctx, `
+		SELECT count()
+		FROM blocks
+		WHERE shard_id = $1 AND id = $2
+	`, id, number)
+	var count uint64
+	if err := row.Scan(&count); err != nil {
+		return false, err
 	}
-	if !rows.Next() {
-		return nil, false, nil
-	}
-	block, err := rowToBlock(rows)
-	if err != nil {
-		return nil, false, err
-	}
-	return block, true, nil
+	check.PanicIfNot(count <= 1)
+	return count > 0, nil
 }
 
-func (d *ClickhouseDriver) FetchNextPresentBlock(ctx context.Context, shardId types.ShardId, number types.BlockNumber) (types.BlockNumber, bool, error) {
-	rows, err := d.conn.Query(ctx, `SELECT blocks.id
-from blocks
-where shard_id = $1 and id > $2 order by id asc`, shardId, number)
-	if err != nil {
-		return 0, false, err
-	}
-	defer func(rows driver.Rows) {
-		_ = rows.Close()
-	}(rows)
-	if !rows.Next() {
-		return 0, false, nil
-	}
-	var blockNumber uint64
-	if err := rows.Scan(&blockNumber); err != nil {
-		return 0, false, err
-	}
-	return types.BlockNumber(blockNumber), true, nil
+func (d *ClickhouseDriver) FetchNextPresentBlockId(ctx context.Context, shardId types.ShardId, number types.BlockNumber) (types.BlockNumber, error) {
+	return d.blockIdFromRow(d.conn.QueryRow(ctx, `
+		SELECT id
+		FROM blocks
+		WHERE shard_id = $1 AND id > $2
+		ORDER BY id ASC
+		LIMIT 1
+	`, shardId, number))
 }

@@ -12,6 +12,8 @@ import (
 
 type BlockNumber uint64
 
+const InvalidBlockNumber BlockNumber = math.MaxUint64
+
 func (bn BlockNumber) Uint64() uint64 {
 	return uint64(bn)
 }
@@ -53,7 +55,7 @@ type BlockData struct {
 type ConsensusParams struct {
 	ProposerIndex uint64                 `json:"proposerIndex" ch:"round"`
 	Round         uint64                 `json:"round" ch:"round"`
-	Signature     *BlsAggregateSignature `json:"signature" ch:"signature"`
+	Signature     *BlsAggregateSignature `json:"signature" ch:"-"`
 }
 
 type Block struct {

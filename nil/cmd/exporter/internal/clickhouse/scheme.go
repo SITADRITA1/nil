@@ -2,10 +2,13 @@ package clickhouse
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/NilFoundation/nil/nil/common"
 	"github.com/NilFoundation/nil/nil/common/check"
 )
 
@@ -45,12 +48,8 @@ func setupScheme(ctx context.Context, conn driver.Conn, tableName string, keys [
 		return fmt.Errorf("scheme for %s not found", tableName)
 	}
 
-	if err := conn.Exec(ctx, scheme.CreateTableQuery(
-		tableName,
-		"ReplacingMergeTree",
-		keys,
-		keys,
-	)); err != nil {
+	query := scheme.CreateTableQuery(tableName, "ReplacingMergeTree", keys, keys)
+	if err := conn.Exec(ctx, query); err != nil {
 		return fmt.Errorf("failed to create table %s: %w", tableName, err)
 	}
 
@@ -82,8 +81,44 @@ func createTableQuery(tableName, fields, engine string, primaryKeys, orderKeys [
 		(%s)
 		ENGINE = %s
 		PRIMARY KEY (%s)
-		order by (%s)
+		ORDER BY (%s)
 `, tableName, fields, engine, strings.Join(primaryKeys, ", "), strings.Join(orderKeys, ", "))
 	logger.Debug().Msgf("CreateTableQuery: %s", query)
 	return query
+}
+
+func tableExists(ctx context.Context, conn driver.Conn, tableName string) (bool, error) {
+	var count uint64
+	if err := conn.QueryRow(ctx, `
+		SELECT count()
+		FROM system.tables
+		WHERE database = currentDatabase() AND name = $1
+	`, tableName).Scan(&count); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func readVersion(ctx context.Context, conn driver.Conn) (common.Hash, error) {
+	if exists, err := tableExists(ctx, conn, "blocks"); err != nil || !exists {
+		return common.Hash{}, err
+	}
+
+	var version common.Hash
+	if err := conn.QueryRow(ctx, `
+		SELECT hash
+		FROM blocks
+		WHERE shard_id = 0 AND id = 0
+	`).Scan(&version); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return common.Hash{}, nil
+		}
+		return common.Hash{}, err
+	}
+
+	return version, nil
 }

@@ -7,6 +7,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestInvalidBlockNumber(t *testing.T) {
+	t.Parallel()
+
+	// The compiler doesn't allow (InvalidBlockNumber+1) because it's an overflow.
+	// So, here's a trick not using constants.
+	for i := range 3 {
+		require.Equal(t, BlockNumber(i-1), InvalidBlockNumber+BlockNumber(i))
+	}
+}
+
 func TestBlock_SignAndVerifySignature(t *testing.T) {
 	t.Parallel()
 
