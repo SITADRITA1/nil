@@ -8,10 +8,8 @@ import {
   compile,
   compileCodeFx,
   fetchCodeSnippetFx,
-  isTutorialPage,
   сlickOnContractsButton,
   сlickOnLogButton,
-  сlickOnTutorialButton,
 } from "./model";
 import "./init";
 import { type Diagnostic, linter } from "@codemirror/lint";
@@ -27,9 +25,13 @@ import { CodeToolbar } from "./code-toolbar/CodeToolbar";
 import { useCompileButton } from "./hooks/useCompileButton";
 import { $tutorialChecksState } from "../../pages/tutorials/model";
 
+interface CodeProps {
+  additionalProp: JSX.Element | null;
+}
+
 const MemoizedCodeToolbar = memo(CodeToolbar);
 
-export const Code = () => {
+export const Code = ({ additionalProp }: CodeProps) => {
   const [isMobile] = useMobile();
   const [code, isDownloading, errors, fetchingCodeSnippet, compiling, warnings, isTutorial, tutorialChecks] =
     useUnit([
@@ -294,32 +296,13 @@ export const Code = () => {
               }}
               kind={BUTTON_KIND.secondary}
               size={BUTTON_SIZE.large}
-              disabled={isTutorial && !tutorialChecks}
               onClick={() => {
                 сlickOnContractsButton();
               }}
             >
               Contracts
             </Button>
-            {isTutorial && (
-              <Button
-                overrides={{
-                  Root: {
-                    style: {
-                      gridColumn: "1 / 3",
-                      lineHeight: "12px",
-                    },
-                  },
-                }}
-                kind={BUTTON_KIND.secondary}
-                size={BUTTON_SIZE.large}
-                onClick={() => {
-                  сlickOnTutorialButton();
-                }}
-              >
-                Tutorial
-              </Button>
-            )}
+            {isMobile && additionalProp && additionalProp}
           </div>
         )}
       </div>

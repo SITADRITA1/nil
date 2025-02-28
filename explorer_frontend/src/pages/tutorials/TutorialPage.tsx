@@ -30,7 +30,7 @@ export const TutorialPage = () => {
   const [tutorialChecks] = useUnit([$tutorialChecksState]);
 
   useEffect(() => {
-    loadedTutorialPage(true);
+    loadedTutorialPage();
 
     return () => {
       closeApp();
@@ -69,7 +69,7 @@ export const TutorialPage = () => {
                       minSize={10}
                       order={1}
                     >
-                      <Code />
+                      <Code additionalProp={null} />
                     </Panel>
                     <PanelResizeHandle
                       className={css({

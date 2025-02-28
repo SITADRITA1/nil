@@ -62,7 +62,7 @@ export const PlaygroundPage = () => {
                       minSize={10}
                       order={1}
                     >
-                      <Code />
+                      <Code additionalProp={null} />
                     </Panel>
                     <PanelResizeHandle
                       className={css({
