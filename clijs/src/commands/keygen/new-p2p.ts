@@ -32,7 +32,7 @@ export default class KeygenNewP2p extends BaseCommand {
 
   static override examples = ["<%= config.bin %> <%= command.id %>"];
 
-  public async run(): Promise<Hex> {
+  public async run(): Promise<void> {
     const { privateKey, publicKey, peerId } = await generateSecp256k1Key();
     if (this.quiet) {
       this.log(privateKey);
